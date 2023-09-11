@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+apply plugin: 'application'
+
+group = 'aws.samples'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'ch.qos.logback:logback-core:1.4.11'
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+}
+
+jar {
+    includeEmptyDirs = false
+    manifest {
+        attributes 'Main-Class': 'aws.samples.gamelift.Main'
+    }
+}
+
+application {
+    mainClassName = 'aws.samples.gamelift.Main'
+}
