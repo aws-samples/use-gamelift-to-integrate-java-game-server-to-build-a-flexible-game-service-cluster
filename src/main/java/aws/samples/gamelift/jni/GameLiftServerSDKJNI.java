@@ -2,6 +2,8 @@ package aws.samples.gamelift.jni;
 
 import aws.samples.gamelift.utils.LibLoader;
 
+import java.util.List;
+
 /**
  * javac -h . GameLiftServerSDKJNI.java
  */
@@ -16,7 +18,7 @@ public class GameLiftServerSDKJNI {
 
     public interface SdkInterface
     {
-        void onStartGameSession();
+        void onStartGameSession(String gameSessionId, String gameSessionData);
 
         void onProcessTerminate();
     }
@@ -30,11 +32,11 @@ public class GameLiftServerSDKJNI {
     /**
      * Initial GameLift SDK
      * @param port
-     * @param logPath
+     * @param logPaths
      * @param sdkInterface
      * @return
      */
-    public native boolean initGameLift(int port, String logPath, SdkInterface sdkInterface);
+    public native boolean initGameLift(int port, List<String> logPaths, SdkInterface sdkInterface);
 
     /**
      * Manually Terminate Game Session

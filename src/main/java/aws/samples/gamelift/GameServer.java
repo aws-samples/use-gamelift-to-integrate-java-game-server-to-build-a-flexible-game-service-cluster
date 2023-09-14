@@ -9,6 +9,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.List;
 
 public class GameServer {
 
@@ -52,9 +53,13 @@ public class GameServer {
         GameLiftServerSDKJNI gameLiftServerSDKJNI = new GameLiftServerSDKJNI();
         int version = gameLiftServerSDKJNI.getCurrentJavaVersion();
         logger.info("current version: {}", version);
-        boolean success = gameLiftServerSDKJNI.initGameLift(port, "logs/aws_" + port + ".log", new GameLiftServerSDKJNI.SdkInterface() {
+
+        List<String> logPaths = List.of("logs/aws_" + port + ".log");
+        boolean success = gameLiftServerSDKJNI.initGameLift(port, logPaths, new GameLiftServerSDKJNI.SdkInterface() {
             @Override
-            public void onStartGameSession() {
+            public void onStartGameSession(String gameSessionId, String gameSessionData) {
+
+                logger.info("Game Session Starting, sessionID:{}, session data:{}", gameSessionId, gameSessionData);
 
                 SocketChannel clientChannel = null;
                 try {
@@ -80,7 +85,6 @@ public class GameServer {
             }
         });
         if (!success) {
-
             logger.error("init gameLift sdk failed!");
             return;
         } else {
@@ -88,7 +92,7 @@ public class GameServer {
         }
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(10*60*1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
