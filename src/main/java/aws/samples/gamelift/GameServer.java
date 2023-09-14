@@ -6,20 +6,24 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class GameServer {
 
-    private static final Logger logger
-            = LoggerFactory.getLogger(GameServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
 
     private volatile static GameServer gameServer;
 
     private GameServer (){}
-    private ServerSocketChannel serverChannel;
+    private static Selector selector = null;
 
     public static GameServer getInstance() {
         if (gameServer == null) {
@@ -32,72 +36,86 @@ public class GameServer {
         return gameServer;
     }
 
-    private int bind() {
-        try {
-            serverChannel = ServerSocketChannel.open();
-            InetSocketAddress socketAddress = new InetSocketAddress("localhost", 0);
-            serverChannel.bind(socketAddress);
-            serverChannel.configureBlocking(false); // non-blocking
-            int port = serverChannel.socket().getLocalPort();
-            logger.info("Server started on port: {}", port);
-            return port;
-        } catch (Exception e) {
-            logger.error("bind server port failure", e);
-        }
-        logger.error("bind server port failure");
-        throw new RuntimeException("bind failure");
-    }
-
     public void start() {
-        int port = bind();
-        GameLiftServerSDKJNI gameLiftServerSDKJNI = new GameLiftServerSDKJNI();
-        int version = gameLiftServerSDKJNI.getCurrentJavaVersion();
-        logger.info("current version: {}", version);
+        try {
+            selector = Selector.open();
+            // We have to set connection host,port and
+            // non-blocking mode
+            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+            ServerSocket serverSocket = serverSocketChannel.socket();
+            serverSocket.bind(new InetSocketAddress("0.0.0.0", 0));
+            serverSocketChannel.configureBlocking(false);
+            int ops = serverSocketChannel.validOps();
+            serverSocketChannel.register(selector, ops, null);
+            int port = serverSocket.getLocalPort();
+            logger.info("Server started on port: {}", port);
 
-        List<String> logPaths = List.of("logs/aws_" + port + ".log");
-        boolean success = gameLiftServerSDKJNI.initGameLift(port, logPaths, new GameLiftServerSDKJNI.SdkInterface() {
-            @Override
-            public void onStartGameSession(String gameSessionId, String gameSessionData) {
+            GameLiftServerSDKJNI gameLiftServerSDKJNI = new GameLiftServerSDKJNI();
+            int version = gameLiftServerSDKJNI.getCurrentJavaVersion();
+            logger.info("current version: {}", version);
+            List<String> logPaths = List.of("logs/aws_" + port + ".log");
+            boolean success = gameLiftServerSDKJNI.initGameLift(port, logPaths, new GameLiftServerSDKJNI.SdkInterface() {
+                @Override
+                public void onStartGameSession(String gameSessionId, String gameSessionData) {
+                    logger.info("Game Session Starting, sessionID:{}, session data:{}", gameSessionId, gameSessionData);
+                }
+                @Override
+                public void onProcessTerminate() {
+                    logger.info("game session terminated");
+                }
+            });
+            if (!success) {
+                logger.error("init gameLift sdk failed!");
+                return;
+            } else {
+                logger.info("Game Session success started on port: {}", port);
+            }
 
-                logger.info("Game Session Starting, sessionID:{}, session data:{}", gameSessionId, gameSessionData);
+            while (true) {
+                selector.select();
+                Set<SelectionKey> selectedKeys = selector.selectedKeys();
+                Iterator<SelectionKey> i = selectedKeys.iterator();
 
-                SocketChannel clientChannel = null;
-                try {
-                    clientChannel = serverChannel.accept();
-
-                    if (clientChannel != null) {
-                        System.out.println("Accepted connection from: " + clientChannel.getRemoteAddress());
-
-                        // 向客户端发送消息
-                        String message = "Hello, client!";
-                        ByteBuffer buffer = ByteBuffer.wrap(message.getBytes());
-                        clientChannel.write(buffer);
-                        clientChannel.close(); // 关闭客户端连接
+                while (i.hasNext()) {
+                    SelectionKey key = i.next();
+                    if (key.isAcceptable()) {
+                        // New client has been  accepted
+                        handleAccept(serverSocketChannel, key);
+                    } else if (key.isReadable()) {
+                        // We can run non-blocking operation
+                        // READ on our client
+                        handleRead(key);
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    i.remove();
                 }
             }
-
-            @Override
-            public void onProcessTerminate() {
-                logger.info("game session terminated");
-            }
-        });
-        if (!success) {
-            logger.error("init gameLift sdk failed!");
-            return;
-        } else {
-            logger.info("Game Session success started on port: {}", port);
+        } catch (IOException e) {
+            logger.error("game server started failed", e);
+            e.printStackTrace();
         }
-
-        try {
-            Thread.sleep(10*60*1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        gameLiftServerSDKJNI.terminateGameSession();
     }
 
+    private static void handleAccept(ServerSocketChannel mySocket, SelectionKey key) throws IOException {
 
+        logger.info("Connection Accepted..");
+        // Accept the connection and set non-blocking mode
+        SocketChannel client = mySocket.accept();
+        client.configureBlocking(false);
+        // Register that client is reading this channel
+        client.register(selector, SelectionKey.OP_READ);
+    }
+
+    private static void handleRead(SelectionKey key) throws IOException {
+        logger.info("Reading client's message.");
+        // create a ServerSocketChannel to read the request
+        SocketChannel client = (SocketChannel) key.channel();
+        // Create buffer to read data
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        client.read(buffer);
+        // Parse data from buffer to String
+        String data = new String(buffer.array()).trim();
+        if (!data.isEmpty()) {
+            logger.info("Received message: {}", data);
+        }
+    }
 }
