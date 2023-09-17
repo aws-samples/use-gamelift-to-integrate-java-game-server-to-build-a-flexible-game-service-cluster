@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import {Iam} from "./iam";
 import {GameLiftLambda} from "./lambda";
+import {ApiGateway} from "./apigateway";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class BackendServiceStack extends cdk.Stack {
@@ -11,11 +12,8 @@ export class BackendServiceStack extends cdk.Stack {
     const gameLiftLambda = new GameLiftLambda(this, "gamelift-lambda", {
       lambdaRole: iamRole.lambdaRole
     })
-    // The code that defines your stack goes here
+    const  apigateway = new ApiGateway(this, "gamelift-APIGateway", {startGameSessionLambda:
+      gameLiftLambda.startGameSessionFunction})
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'BackendServiceQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
   }
 }

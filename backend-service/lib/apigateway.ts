@@ -31,20 +31,20 @@ export class ApiGateway extends Construct {
         new cdk.CfnOutput(scope, 'InvokeUrl', { value: gameLiftAPI.url })
 
         // 创建 API Key
-        const apiKey = new apigateway.ApiKey(this, 'GameLiftAPIKEY', {
-            apiKeyName: 'Game Lift API Key',
+        const apiKey = new apigateway.ApiKey(this, 'TestGameLiftAPIKEY', {
+            apiKeyName: 'Test Game Lift API Key',
             enabled: true,
             description: 'test api key'
         });
-        const matchmakingRootPath = gameLiftAPI.root.addResource('matchmaking', {
+        const startGameSessionRootPath = gameLiftAPI.root.addResource('game-sessions', {
             defaultMethodOptions: {
                 apiKeyRequired: true
             }
         });
-        matchmakingRootPath.addMethod('POST', new apigateway.LambdaIntegration(props.startGameSessionLambda));
+        startGameSessionRootPath.addMethod('POST', new apigateway.LambdaIntegration(props.startGameSessionLambda));
 
-        const usagePlan = gameLiftAPI.addUsagePlan('ZJAPIKeyUsagePlan', {
-            name: 'SuJie-GLWorkshop-UsagePlan',
+        const usagePlan = gameLiftAPI.addUsagePlan('TestAPIKeyUsagePlan', {
+            name: 'Test-GLWorkshop-UsagePlan',
             throttle: {
                 burstLimit: 10,
                 rateLimit: 100
@@ -62,6 +62,7 @@ export class ApiGateway extends Construct {
             ]
         });
         usagePlan.addApiKey(apiKey)
+        new cdk.CfnOutput(scope, 'API-Key ARN', { value: apiKey.keyArn })
     }
 
 }

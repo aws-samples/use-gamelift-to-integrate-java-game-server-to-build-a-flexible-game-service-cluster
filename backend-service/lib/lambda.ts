@@ -8,6 +8,8 @@ export interface LambdaProps {
     lambdaRole: iam.IRole,
 }
 export class GameLiftLambda extends Construct {
+
+    public readonly startGameSessionFunction: lambda.IFunction;
     constructor(scope: Construct, id: string, props:LambdaProps) {
         super(scope, id);
         const functionSettings : lambdanodejs.NodejsFunctionProps = {
@@ -20,7 +22,7 @@ export class GameLiftLambda extends Construct {
             logRetention: cdk.aws_logs.RetentionDays.ONE_WEEK
         }
 
-        const startGameSessionFunction = new lambdanodejs.NodejsFunction(this, 'StartGameSession', {
+        this.startGameSessionFunction = new lambdanodejs.NodejsFunction(this, 'StartGameSession', {
             functionName: 'chongqi-start-game-session',
             entry: './resource/lambda-scripts/start-game-session.ts',
             environment: {
