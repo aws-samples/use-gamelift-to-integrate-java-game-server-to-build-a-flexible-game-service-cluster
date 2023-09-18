@@ -59,7 +59,7 @@ else()
         "${USED_JDK_HOME}/include"
         "${USED_JDK_HOME}/include/linux"
         # aws头文件
-        "${ROOT_DIR}/sdk/include"
+        "${ROOT_DIR}/thirdparty/aws/include"
         # openssl头文件
         "/usr/include/openssl"
 
@@ -69,7 +69,7 @@ else()
         # jni库路径
          "${USED_JDK_HOME}/lib"
          # aws库路径
-         "${ROOT_DIR}/sdk/lib"
+         "${ROOT_DIR}/thirdparty/aws/lib"
          # openssl 库路径
          "/usr/lib64"
     )
