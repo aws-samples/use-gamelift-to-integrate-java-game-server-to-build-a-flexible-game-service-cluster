@@ -46,43 +46,42 @@ if(WIN32)
 		"libssl.lib"
 	)
 else()
-	# linux 路径配置
 	# 设置jni依赖路径
 	set(USED_JDK_HOME "$ENV{JAVA_HOME}")
-	if(USED_JDK_HOME STREQUAL "")
-		set(USED_JDK_HOME "/usr/lib/jvm/java-1.8.0-openjdk")
-	endif()
-	set(USED_JDK_LIB "${USED_JDK_HOME}/lib" "${USED_JDK_HOME}/lib/amd64")
+    if(USED_JDK_HOME STREQUAL "")
+        set(USED_JDK_HOME "/usr/lib/jvm/java-11-amazon-corretto.x86_64")
+    endif()
+    set(USED_JDK_LIB "${USED_JDK_HOME}/lib")
 
-	# 设置依赖的头文件路径
-	set(TARGET_INCULDES 
-		# jni头文件
-		"${USED_JDK_HOME}/include"
-		"${USED_JDK_HOME}/include/linux"
-		# aws头文件
-		"${ROOT_DIR}/thirdparty/aws/include"
-		# openssl头文件
-		"/usr/include/openssl"
-	)
+    # 设置依赖的头文件路径
+    set(TARGET_INCULDES
+        # jni头文件
+        "${USED_JDK_HOME}/include"
+        "${USED_JDK_HOME}/include/linux"
+        # aws头文件
+        "${ROOT_DIR}/sdk/include"
+        # openssl头文件
+        "/usr/include/openssl"
 
-	# 设置库依赖路径
-	set(TARGET_LIBS_PATH 
-		# jni库路径
-		 "${USED_JDK_HOME}/lib"
-		 "${USED_JDK_HOME}/lib/amd64"
-		 # aws库路径
-		 "${ROOT_DIR}/thirdparty/aws/lib"
-		 # openssl 库路径
-		 "/usr/lib64"
-	)
+    )
+    # 设置库依赖路径
+    set(TARGET_LIBS_PATH
+        # jni库路径
+         "${USED_JDK_HOME}/lib"
+         # aws库路径
+         "${ROOT_DIR}/sdk/lib"
+         # openssl 库路径
+         "/usr/lib64"
+    )
 
-	# 设置库文件文件
-	set(TARGET_LIBS_FILES 
-		# aws libs
-		"aws-cpp-sdk-gamelift-server.a" 
+    # 设置库文件文件
+    set(TARGET_LIBS_FILES
+        # sdk libs
+        "aws-cpp-sdk-gamelift-server.a"
+        # openssl libs
         "libcrypto.so"
         "libssl.so"
-	)
+    )
     # 设置pthread
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
