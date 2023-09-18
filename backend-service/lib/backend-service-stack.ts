@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import {Iam} from "./iam";
 import {GameLiftLambda} from "./lambda";
 import {ApiGateway} from "./apigateway";
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import {GameLiftService} from "./gamelift";
 
 export class BackendServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -12,8 +12,8 @@ export class BackendServiceStack extends cdk.Stack {
     const gameLiftLambda = new GameLiftLambda(this, "gamelift-lambda", {
       lambdaRole: iamRole.lambdaRole
     })
-    const  apigateway = new ApiGateway(this, "gamelift-APIGateway", {startGameSessionLambda:
-      gameLiftLambda.startGameSessionFunction})
+    const  apigateway = new ApiGateway(this, "gamelift-APIGateway", {startGameSessionLambda: gameLiftLambda.startGameSessionFunction})
+    const gameliftService: GameLiftService = new GameLiftService(this, "gameLiftService");
 
   }
 }

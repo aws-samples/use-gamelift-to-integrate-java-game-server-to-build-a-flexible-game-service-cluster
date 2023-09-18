@@ -12,14 +12,6 @@ export class GameLiftService extends Construct {
             type: 'TERMINAL',
             message: 'Placeholder'
         };
-        const fleetIdContext = this.node.tryGetContext('fleetId') as string;
-        if (fleetIdContext.length > 0)
-        {
-            routingStrategy = {
-                type: 'SIMPLE',
-                fleetId: fleetIdContext
-            };
-        }
         const fleetAlias = new gamelift.CfnAlias(scope, 'DefaultFleetAlias', {
             name: 'java-game-server-fleet-Alias',
             routingStrategy: routingStrategy,
