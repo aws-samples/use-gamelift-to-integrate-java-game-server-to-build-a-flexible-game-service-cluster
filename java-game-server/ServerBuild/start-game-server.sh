@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar gamelift-java-game-server-demo-1.0-SNAPSHOT-all.jar
+java -jar java-game-server-1.0-SNAPSHOT-all.jar

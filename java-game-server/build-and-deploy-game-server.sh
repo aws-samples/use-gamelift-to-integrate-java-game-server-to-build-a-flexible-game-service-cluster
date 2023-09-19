@@ -1,7 +1,7 @@
 #!/bin/bash
-./gradlew clean build
-rm -rf ./ServerBuild/gamelift-java-game-server-demo-1.0-SNAPSHOT-all.jar
-cp ./build/libs/gamelift-java-game-server-demo-1.0-SNAPSHOT-all.jar ./ServerBuild/
+../gradlew clean build
+rm -rf ./ServerBuild/java-game-server-1.0-SNAPSHOT-all.jar
+cp ./build/libs/java-game-server-1.0-SNAPSHOT-all.jar ./ServerBuild/
 
 region=us-east-1
 echo "Deploying build to GameLift in $region"
