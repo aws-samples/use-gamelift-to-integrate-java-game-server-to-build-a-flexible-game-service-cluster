@@ -10,6 +10,7 @@ export interface LambdaProps {
 export class GameLiftLambda extends Construct {
 
     public readonly startGameSessionFunction: lambda.IFunction;
+    public readonly getGameSessionPlacementFunction: lambda.IFunction;
     constructor(scope: Construct, id: string, props:LambdaProps) {
         super(scope, id);
         const functionSettings : lambdanodejs.NodejsFunctionProps = {
@@ -23,8 +24,16 @@ export class GameLiftLambda extends Construct {
         }
 
         this.startGameSessionFunction = new lambdanodejs.NodejsFunction(this, 'StartGameSession', {
-            functionName: 'chongqi-start-game-session',
+            functionName: 'test-start-game-session',
             entry: './resource/lambda-scripts/start-game-session.ts',
+            environment: {
+            },
+            ...functionSettings
+        });
+
+        this.getGameSessionPlacementFunction = new lambdanodejs.NodejsFunction(this, 'GetGameSessionPlacement', {
+            functionName: 'test-get-game-session',
+            entry: './resource/lambda-scripts/get-game-session.ts',
             environment: {
             },
             ...functionSettings

@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as lambda from "aws-cdk-lib/aws-lambda";
 export interface APIGatewayProps {
     startGameSessionLambda: lambda.IFunction,
+    getGameSessionPlacementLambda: lambda.IFunction,
 }
 export class ApiGateway extends Construct {
 
@@ -36,12 +37,13 @@ export class ApiGateway extends Construct {
             enabled: true,
             description: 'test api key'
         });
-        const startGameSessionRootPath = gameLiftAPI.root.addResource('game-sessions', {
+        const gameSessionRootPath = gameLiftAPI.root.addResource('game-sessions', {
             defaultMethodOptions: {
                 apiKeyRequired: true
             }
         });
-        startGameSessionRootPath.addMethod('POST', new apigateway.LambdaIntegration(props.startGameSessionLambda));
+        gameSessionRootPath.addMethod('POST', new apigateway.LambdaIntegration(props.startGameSessionLambda));
+        gameSessionRootPath.addMethod("GET", new apigateway.LambdaIntegration(props.getGameSessionPlacementLambda))
 
         const usagePlan = gameLiftAPI.addUsagePlan('TestAPIKeyUsagePlan', {
             name: 'Test-GLWorkshop-UsagePlan',

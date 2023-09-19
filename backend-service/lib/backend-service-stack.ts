@@ -12,7 +12,11 @@ export class BackendServiceStack extends cdk.Stack {
     const gameLiftLambda = new GameLiftLambda(this, "gamelift-lambda", {
       lambdaRole: iamRole.lambdaRole
     })
-    const  apigateway = new ApiGateway(this, "gamelift-APIGateway", {startGameSessionLambda: gameLiftLambda.startGameSessionFunction})
+    const apigateway = new ApiGateway(this, "gamelift-APIGateway",
+        {
+          startGameSessionLambda: gameLiftLambda.startGameSessionFunction,
+          getGameSessionPlacementLambda: gameLiftLambda.getGameSessionPlacementFunction
+        })
     const gameliftService: GameLiftService = new GameLiftService(this, "gameLiftService");
 
   }
