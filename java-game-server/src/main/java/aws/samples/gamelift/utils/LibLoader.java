@@ -32,11 +32,10 @@ public class LibLoader
             if (!fileOut.exists())
             {
                 fileOut.createNewFile();
-            }
-
-            try (OutputStream out = Files.newOutputStream(fileOut.toPath()))
-            {
-                Utils.copy(in, out, 8024);
+                try (OutputStream out = Files.newOutputStream(fileOut.toPath()))
+                {
+                    Utils.copy(in, out, 8024);
+                }
             }
             System.load(fileOut.getAbsolutePath());
         }

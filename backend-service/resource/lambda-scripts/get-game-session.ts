@@ -19,7 +19,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     }
 
     const placementId = event.pathParameters['placement-id'] as string;
-    console.log(`ticketId: ${placementId}`);
+    console.log(`placement id: ${placementId}`);
 
     try {
         let params : GameLift.DescribeGameSessionPlacementInput = {
