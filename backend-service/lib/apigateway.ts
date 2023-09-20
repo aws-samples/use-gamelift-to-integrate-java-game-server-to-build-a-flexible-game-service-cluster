@@ -13,7 +13,7 @@ export class ApiGateway extends Construct {
         const stageName = 'dev';
         let domainNameOptions : apigateway.DomainNameOptions | undefined;
         const gameLiftAPI = new apigateway.RestApi(this, 'GameLiftAPI', {
-            restApiName: 'test-GLWorkshop-GameLiftAPI',
+            restApiName: 'Test-Java-Game-Server-GameLiftAPI',
             domainName: domainNameOptions,
             retainDeployments: false,
             deploy: true,
@@ -42,8 +42,9 @@ export class ApiGateway extends Construct {
                 apiKeyRequired: true
             }
         });
+        const getGameSessionPath = gameSessionRootPath.addResource("{placement-id}")
         gameSessionRootPath.addMethod('POST', new apigateway.LambdaIntegration(props.startGameSessionLambda));
-        gameSessionRootPath.addMethod("GET", new apigateway.LambdaIntegration(props.getGameSessionPlacementLambda))
+        getGameSessionPath.addMethod("GET", new apigateway.LambdaIntegration(props.getGameSessionPlacementLambda))
 
         const usagePlan = gameLiftAPI.addUsagePlan('TestAPIKeyUsagePlan', {
             name: 'Test-GLWorkshop-UsagePlan',
