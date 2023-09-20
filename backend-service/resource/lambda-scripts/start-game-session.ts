@@ -35,7 +35,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
 
         return {
             statusCode: 200,
-            body: ""
+            body: JSON.stringify(startGSOut, null, 2),
         };
 
     } catch (err) {

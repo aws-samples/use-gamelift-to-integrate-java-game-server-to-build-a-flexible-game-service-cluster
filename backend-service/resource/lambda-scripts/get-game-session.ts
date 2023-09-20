@@ -26,11 +26,11 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
             PlacementId: placementId,
         }
         const getGameSessionPlacementOut = await gamelift.describeGameSessionPlacement(params).promise();
-        console.log(`gamelift.startGameSession result: ${JSON.stringify(getGameSessionPlacementOut, null, 2)}`);
+        console.log(`gamelift.get game session placement result: ${JSON.stringify(getGameSessionPlacementOut, null, 2)}`);
 
         return {
             statusCode: 200,
-            body: ""
+            body: JSON.stringify(getGameSessionPlacementOut, null, 2)
         };
 
     } catch (err) {
