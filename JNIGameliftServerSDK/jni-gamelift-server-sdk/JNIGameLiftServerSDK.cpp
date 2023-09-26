@@ -178,7 +178,16 @@ JNIEXPORT jboolean JNICALL Java_aws_samples_gamelift_jni_GameLiftServerSDKJNI_in
 	printf("Native Log: start init gamelift on port: %d\n", port);
 	// setup log file
 	int permission = 0777;
-	mkdir("./logs", permission);
+	const char* dir = ".logs";
+	struct stat sb;
+    if (stat(dir, &sb) == 0) {
+        std::cout << "The path is valid!";
+    }
+    else
+    {
+        mkdir(dir, permission);
+    }
+
 	std::string logfile = std::string("logs/myserver");
 	logfile += std::to_string(port) + ".log";
 	freopen(logfile.c_str(), "a", stdout);
