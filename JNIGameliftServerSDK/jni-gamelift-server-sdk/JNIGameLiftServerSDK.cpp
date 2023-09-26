@@ -75,10 +75,10 @@ void OnStartGameSession(Aws::GameLift::Server::Model::GameSession myGameSession)
 	try
 	{
 		std::cout << "OnStartGameSession...\n";
-		// 通知gamelift启动成功
+		// inform gamelift start success
 		Aws::GameLift::Server::ActivateGameSession();
 
-		// 通知java进程开启服务
+		// inform java start serving
 		std::string gameSessionId = myGameSession.GetGameSessionId();
 		std::string gameSessionData = myGameSession.GetGameSessionData();
 		jstring jGamesessionId = string_to_jstring(env, gameSessionId);
@@ -86,13 +86,13 @@ void OnStartGameSession(Aws::GameLift::Server::Model::GameSession myGameSession)
 		env->CallVoidMethod(sdk_interface, onstart_method_id, jGamesessionId, jGameSessionData);
 		std::cout << "OnStartGameSession Success!\n";
 
-		// 回收线程
+		// release thread
 		globalJavaVM->DetachCurrentThread();
 	}
 	catch (int exception)
 	{
 		std::cout << "[OnStartGameSession] Exception Code: " << exception << "\n";
-		// 回收线程
+		// release thread
 		globalJavaVM->DetachCurrentThread();
 	}
 }
@@ -117,7 +117,7 @@ void OnProcessTerminate()
 		return;
 	}
 
-	// 获取JNIEnv
+	// get JNIEnv
 	JNIEnv* env = nullptr;
 	const jint result = globalJavaVM->AttachCurrentThread((void**)&env, nullptr);
 	if (result != JNI_OK)
@@ -145,20 +145,20 @@ void OnProcessTerminate()
 	try
 	{
 		std::cout << "OnProcessTerminate...\n";
-		// invoke onStartGameSession listener
+		// invoke onProcessTerminate
 		env->CallVoidMethod(sdk_interface, on_process_terminate_method_id);
 
-		// 关闭session
+		//close session
 		TerminateGameSession();
 		std::cout << "OnProcessTerminate Finish!\n";
 
-		// 回收线程
+		// release thread
 		globalJavaVM->DetachCurrentThread();
 	}
 	catch (int exception)
 	{
 		std::cout << "Exception Code: " << exception << "\n";
-		// 回收线程
+		// release thread
 		globalJavaVM->DetachCurrentThread();
 	}
 }
