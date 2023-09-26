@@ -176,11 +176,17 @@ JNIEXPORT jboolean JNICALL Java_aws_samples_gamelift_jni_GameLiftServerSDKJNI_in
 (JNIEnv* env, jobject obj, jint port, jobject log_path_list, jobject sinterface)
 {
 	printf("Native Log: start init gamelift on port: %d\n", port);
-	mkdir("./logs", 0777);
+	// setup log file
+	int permission = 0777;
+	mkdir("./logs", permission);
 	std::string logfile = std::string("logs/myserver");
 	logfile += std::to_string(port) + ".log";
 	freopen(logfile.c_str(), "a", stdout);
 	freopen(logfile.c_str(), "a", stderr);
+	if (chmod(logfile.c_str(), permission) != 0) {
+        std::cerr << "Failed to set file permissions." << std::endl;
+        return 1;
+    }
 	std::cout << "Server port: " << port << std::endl;
 
 	sdk_interface = env->NewGlobalRef(sinterface);
