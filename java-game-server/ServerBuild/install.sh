@@ -17,4 +17,5 @@ else
     echo "log folder exists。"
 fi
 sudo chmod 777 /local/game/logs
+sudo echo "Test logs" > /local/game/logs/test.log
 sudo systemctl start fluent-bit
