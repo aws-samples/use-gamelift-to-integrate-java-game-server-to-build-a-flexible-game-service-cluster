@@ -180,7 +180,7 @@ JNIEXPORT jboolean JNICALL Java_aws_samples_gamelift_jni_GameLiftServerSDKJNI_in
 	logfile += std::to_string(port) + ".log";
 	freopen(logfile.c_str(), "a", stdout);
 	freopen(logfile.c_str(), "a", stderr);
-	if (chmod(logfile.c_str(), permission) != 0) {
+	if (chmod(logfile.c_str(), 777) != 0) {
         std::cerr << "Failed to set file permissions." << std::endl;
         return 1;
     }
