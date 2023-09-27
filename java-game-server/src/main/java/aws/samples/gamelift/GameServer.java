@@ -68,7 +68,7 @@ public class GameServer {
                 logger.error("init gameLift sdk failed!");
                 return;
             } else {
-                logger.info("Game Session success started on port: {}", port);
+                logger.info("Game Process success started on port: {}", port);
             }
 
             while (true) {
