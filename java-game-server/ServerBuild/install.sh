@@ -3,7 +3,7 @@ echo "install dependencies here"
 curl https://raw.githubusercontent.com/fluent/fluent-bit/master/install.sh | sh
 sudo mv ./fluent-bit.conf /etc/fluent-bit/fluent-bit.conf
 ## we need to create log folder at first, because if not the fluent bit will not be started success.
-logs_path="./logs"
+logs_path="/local/game/logs"
 if [ ! -d "$logs_path" ]; then
     echo "log folder not exists..."
     mkdir -p "$logs_path"
@@ -16,4 +16,5 @@ if [ ! -d "$logs_path" ]; then
 else
     echo "log folder exists。"
 fi
+sudo chmod 777 /local/game/logs
 sudo systemctl start fluent-bit
